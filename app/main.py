@@ -6,6 +6,10 @@ import json
 from typing import Dict, Any
 
 app = FastAPI()
+@app.on_event("startup")
+async def startup_event():
+    # Pull the model so it is ready when the app starts
+    ollama.pull("llama3.2")
 
 # Define constants
 SYSTEM_PROMPT = '''Respond only with a JSON object containing probability scores (0-1) for each bias category, including "others" if no listed categories apply. Also include a "highest_probability_category" key, which identifies the category with the highest probability, and a "Note" key for a brief explanation under 20 words:
