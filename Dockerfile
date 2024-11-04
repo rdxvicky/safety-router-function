@@ -1,19 +1,21 @@
-# Use the official Ollama image as base
+# Use the official Python 3.11 slim image as the base
 FROM python:3.11-slim
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
+# Copy the requirements file into the container
 COPY requirements.txt /app/
 
+# Install the required Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
-COPY app /app
+# Copy the rest of the application files into the container
+COPY . /app
 
-CMD ["ollama", "pull", "llama3.2"]
-
+# Expose port 80 for the FastAPI app
 EXPOSE 80
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+# Pull the model during FastAPI app startup rather than in Dockerfile
+# Start the FastAPI application using uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
