@@ -10,15 +10,22 @@ COPY . /app
 # Set non-interactive mode to prevent timezone selection prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install Python and venv
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install -y python3.11 && \
+    apt-get install -y python3.11 python3.11-venv && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Create and activate virtual environment
+ENV VIRTUAL_ENV=/app/venv
+RUN python3.11 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Install Python dependencies in virtual environment
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Pull the Llama 3.2 model
 RUN ollama pull llama3.2
