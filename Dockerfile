@@ -27,6 +27,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
+RUN ollama serve
 # Pull the Llama 3.2 model
 RUN ollama pull llama3.2
 
