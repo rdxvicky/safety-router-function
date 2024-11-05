@@ -8,9 +8,6 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Ollama Python client
-RUN pip install ollama
-
 # Pull the llama3.2 model during the build
 RUN ollama pull llama3.2
 
