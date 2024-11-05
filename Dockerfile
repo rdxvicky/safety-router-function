@@ -29,6 +29,10 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
     rm -rf ~/.cache/pip/*
 
+# Copy the entrypoint script first and make it executable
+COPY entrypoint.sh /app/
+RUN chmod +x /app/entrypoint.sh
+
 # Copy the rest of the application
 COPY . .
 
@@ -38,5 +42,5 @@ RUN mkdir -p /root/.ollama
 # Expose ports for both Ollama (11434) and FastAPI (80)
 EXPOSE 11434 80
 
-# Start both Ollama and FastAPI using a shell command
-CMD ollama serve & sleep 10 && uvicorn app.main:app --host 0.0.0.0 --port 80
+# Use the entrypoint script
+ENTRYPOINT ["/app/start.sh"]
