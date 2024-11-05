@@ -7,7 +7,12 @@ WORKDIR /app
 # Copy the application code into the container
 COPY . /app
 
-RUN apt-get update && apt-get install -y python
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y python3.11 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
