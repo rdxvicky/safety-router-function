@@ -38,7 +38,7 @@ async def analyze_text(input_data: TextInput):
         start_time = time.time()
         
         response = ollama.chat(
-            model="llama3.1", 
+            model="llama3.2", 
             messages=[
                 {
                     'role': 'system',
