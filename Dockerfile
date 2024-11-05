@@ -1,21 +1,20 @@
-FROM ghcr.io/anthropic/ollama:latest
-
-RUN ollama pull llama3.2
-# Use the official Python 3.11 slim image as the base
-FROM python:3.11-slim
+# Use the official Ollama Docker image as the base
+FROM ghcr.io/ollama/ollama:latest
 
 # Set the working directory
 WORKDIR /app
 
-# Copy requirements and install packages
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code into the container
+# Copy the application code into the container
 COPY . /app
 
-# Expose port 80 for FastAPI app
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Pull the Llama 3.2 model
+RUN ollama pull llama3.2
+
+# Expose the port your FastAPI app will run on
 EXPOSE 80
 
-# Start FastAPI application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+# Start the FastAPI application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
