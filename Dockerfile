@@ -1,5 +1,5 @@
 # Use the official Ollama Docker image as the base
-FROM ghcr.io/ollama/ollama:latest
+FROM ollama/ollama:latest
 
 # Set the working directory
 WORKDIR /app
