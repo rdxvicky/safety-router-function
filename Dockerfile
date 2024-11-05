@@ -32,15 +32,11 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy the rest of the application
 COPY . .
 
-# Make the startup script executable
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
-
 # Create a directory for Ollama models
 RUN mkdir -p /root/.ollama
 
 # Expose ports for both Ollama (11434) and FastAPI (80)
 EXPOSE 11434 80
 
-# Use ENTRYPOINT instead of CMD
-ENTRYPOINT ["/app/start.sh"]
+# Start both Ollama and FastAPI using a shell command
+CMD ollama serve & sleep 10 && uvicorn app.main:app --host 0.0.0.0 --port 80
