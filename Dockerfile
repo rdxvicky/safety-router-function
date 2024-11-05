@@ -31,7 +31,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy the entrypoint script first and make it executable
 COPY entrypoint.sh /app/
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /app/start.sh
 
 # Copy the rest of the application
 COPY . .
