@@ -7,6 +7,8 @@ WORKDIR /app
 # Copy the application code into the container
 COPY . /app
 
+RUN apt-get update && apt-get install -y python
+
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
