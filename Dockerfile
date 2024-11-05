@@ -4,12 +4,9 @@ FROM python:3.11-slim
 # Set the working directory
 WORKDIR /app
 
-# Copy the requirements file and install packages
+# Copy requirements and install packages
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Pull the llama3.2 model during the build
-RUN ollama pull llama3.2
 
 # Copy the rest of the application code into the container
 COPY . /app
