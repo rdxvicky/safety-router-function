@@ -1,3 +1,6 @@
+FROM ghcr.io/anthropic/ollama:latest
+
+RUN ollama pull llama3.2
 # Use the official Python 3.11 slim image as the base
 FROM python:3.11-slim
 
