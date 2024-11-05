@@ -2,14 +2,9 @@ import ollama
 import time
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import json
 from typing import Dict, Any
 
 app = FastAPI()
-@app.on_event("startup")
-async def startup_event():
-    # Pull the model so it is ready when the app starts
-    ollama.pull("llama3.2")
 
 # Define constants
 SYSTEM_PROMPT = '''Respond only with a JSON object containing probability scores (0-1) for each bias category, including "others" if no listed categories apply. Also include a "highest_probability_category" key, which identifies the category with the highest probability, and a "Note" key for a brief explanation under 20 words:
@@ -36,6 +31,15 @@ class AnalysisResponse(BaseModel):
     analysis: Dict[str, Any]
     response_time: str
 
+# Ensure the model is pulled during startup
+@app.on_event("startup")
+async def startup_event():
+    try:
+        # This attempts to pull or verify the model on startup
+        ollama.chat(model="llama3.2", messages=[{'role': 'system', 'content': 'Checking model availability'}])
+    except Exception as e:
+        raise RuntimeError(f"Failed to pull the llama3.2 model: {e}")
+
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_text(input_data: TextInput):
     try:
@@ -57,7 +61,7 @@ async def analyze_text(input_data: TextInput):
         )
 
         # Parse response content as JSON to validate format
-        analysis = json.loads(response['message']['content'])
+        analysis = response['message']['content']
         
         response_time = time.time() - start_time
         
@@ -66,11 +70,6 @@ async def analyze_text(input_data: TextInput):
             response_time=f"{response_time:.2f} seconds"
         )
         
-    except json.JSONDecodeError:
-        raise HTTPException(
-            status_code=500,
-            detail="Invalid JSON response from model"
-        )
     except Exception as e:
         raise HTTPException(
             status_code=500,
