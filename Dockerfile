@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy the application code into the container
 COPY . /app
 
+# Set non-interactive mode to prevent timezone selection prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
