@@ -1,6 +1,6 @@
 #!/bin/bash
 # Start ollama serve in the background
-ollama serve &
+ollama serve
 
 # Pull the required model (you might need to add logic if it’s conditional)
 ollama pull llama3.2
