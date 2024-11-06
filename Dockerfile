@@ -9,8 +9,7 @@ COPY requirements.txt /app/
 
 RUN pip install -no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
-COPY app /app
+RUN ollama pull llama3.2
 
 EXPOSE 80
 
