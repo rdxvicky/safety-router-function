@@ -53,7 +53,20 @@ async def analyze_text(input_data: TextInput):
         )
 
         # Parse response content as JSON to validate format
-        analysis = json.loads(response['message']['content'])
+        raw_analysis = json.loads(response['message']['content'])
+        
+        # Convert probabilities to percentages
+        analysis = {}
+        for key, value in raw_analysis.items():
+            if isinstance(value, dict) and 'probability' in value:
+                analysis[key] = {'probability': f"{value['probability'] * 100:.1f}"}
+            elif key == 'highest_probability_category':
+                analysis[key] = {
+                    'category': value['category'],
+                    'probability': f"{value['probability'] * 100:.1f}"
+                }
+            else:
+                analysis[key] = value
         
         response_time = time.time() - start_time
         
