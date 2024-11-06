@@ -19,14 +19,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . /app/
 
-# Start Ollama service, pull the model, and then shutdown the service
-RUN service ollama start && \
+# Start Ollama process, pull the model, and then terminate the process
+RUN ollama serve & \
     sleep 5 && \
     ollama pull llama3.2 && \
-    service ollama stop
+    pkill ollama
 
 # Expose port for FastAPI
 EXPOSE 80
 
-# Start Ollama service and then run the FastAPI app
-CMD ["sh", "-c", "service ollama start && uvicorn app.main:app --host 0.0.0.0 --port 80"]
+# Start Ollama process and then run the FastAPI app
+CMD ["sh", "-c", "ollama serve & uvicorn app.main:app --host 0.0.0.0 --port 80"]
