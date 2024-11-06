@@ -9,9 +9,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Ollama binary
-RUN curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/local/bin/ollama \
-    && chmod +x /usr/local/bin/ollama
+# Install Ollama using the official installation script
+RUN curl -fsSL https://ollama.com/install.sh | sh
 
 # Copy requirements first to leverage Docker cache
 COPY requirements.txt /app/
@@ -21,13 +20,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 # Start Ollama service, pull the model, and then shutdown the service
-RUN ollama serve & \
+RUN service ollama start && \
     sleep 5 && \
     ollama pull llama3.2 && \
-    pkill ollama
+    service ollama stop
 
 # Expose port for FastAPI
 EXPOSE 80
 
 # Start Ollama service and then run the FastAPI app
-CMD ["sh", "-c", "ollama serve & uvicorn app.main:app --host 0.0.0.0 --port 80"]
+CMD ["sh", "-c", "service ollama start && uvicorn app.main:app --host 0.0.0.0 --port 80"]
