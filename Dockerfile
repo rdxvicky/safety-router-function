@@ -10,9 +10,8 @@ COPY requirements.txt /app/
 RUN pip install -no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
-COPY entrypoint.sh /app/
-RUN chmod +x /app/entrypoint.sh
+COPY app /app
 
 EXPOSE 80
 
-CMD ["/app/entrypoint.sh"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
