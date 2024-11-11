@@ -6,6 +6,11 @@ import json
 from typing import Dict, Any, Optional
 import logging
 from enum import Enum
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(
@@ -55,16 +60,40 @@ class BiasCategory(Enum):
 # Pydantic Models
 class TextInput(BaseModel):
     text: str
+    
+class RoutingDecision(BaseModel):
+    selected_model: str
+    bias_category: str
+    confidence: float
+    model_accuracy: Optional[int]
+    reason: str
+    message_content: Optional[str]  # Changed from gpt4_response to message_content
+
+class BiasAnalysis(BaseModel):
+    demographic: Dict[str, float]
+    age: Dict[str, float]
+    physical_appearance: Dict[str, float]
+    gender: Dict[str, float]
+    disability: Dict[str, float]
+    socioeconomic_status: Dict[str, float]
+    religion: Dict[str, float]
+    sexual_orientation: Dict[str, float]
+    race: Dict[str, float]
+    nationality: Dict[str, float]
+    others: Dict[str, float]
+    highest_probability_category: Dict[str, Any]
+    Note: str
 
 class RoutingResponse(BaseModel):
-    routing_decision: Dict[str, Any]
-    bias_analysis: Dict[str, Any]
+    routing_decision: RoutingDecision
+    bias_analysis: BiasAnalysis
     response_time: str
 
 class SafetyRouter:
     def __init__(self, api_keys: Dict[str, str]):
         self.api_keys = api_keys
         self._initialize_bias_mappings()
+        self.openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
     
     def _initialize_bias_mappings(self):
         """Initialize mappings of bias categories to best handling models"""
@@ -179,6 +208,17 @@ class SafetyRouter:
 
         return analysis
 
+    async def process_with_gpt4(self, text: str) -> str:
+        """Process text through GPT-4 and return only the message content"""
+        completion = self.openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "user", "content": text}
+            ]
+        )
+        # Extract only the message content from the response
+        return completion.choices[0].message.content
+
 @app.post("/route", response_model=RoutingResponse)
 async def route_request(input_data: TextInput):
     try:
@@ -188,7 +228,7 @@ async def route_request(input_data: TextInput):
         # Initialize router with API keys
         router = SafetyRouter(
             api_keys={
-                "gpt4": "your-gpt4-key",
+                "gpt4": os.getenv('OPENAI_API_KEY'),
                 "claude": "your-claude-key",
                 "gemini": "your-gemini-key",
                 "mixtral": "your-mixtral-key"
@@ -200,6 +240,11 @@ async def route_request(input_data: TextInput):
         
         # Get routing decision
         routing_decision = router.select_model(bias_analysis)
+        
+        # If GPT4 is selected, process with GPT4
+        if routing_decision["selected_model"] == "gpt4":
+            message_content = await router.process_with_gpt4(input_data.text)
+            routing_decision["message_content"] = message_content
         
         response_time = time.time() - start_time
         logger.info(f"Routing completed in {response_time:.2f} seconds")
