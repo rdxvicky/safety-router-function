@@ -49,7 +49,8 @@ The API returns a JSON object containing three main sections:
         "bias_category": "string",
         "confidence": float,
         "model_accuracy": integer,
-        "reason": "string"
+        "reason": "string",
+        "message_content": "string"
     },
     "bias_analysis": {
         "demographic": {"probability": "float"},
@@ -119,7 +120,8 @@ Each model is specialized in handling specific types of bias based on their demo
         "bias_category": "sexual_orientation",
         "confidence": 80,
         "model_accuracy": 91,
-        "reason": "Selected gpt4 for sexual_orientation bias handling (accuracy: 91%)"
+        "reason": "Selected gpt4 for sexual_orientation bias handling (accuracy: 91%)",
+        "message_content": "The COVID-19 pandemic has exacerbated stress and anxiety for many people, regardless of sexual orientation. However, previous research shows that LGBTQ+ individuals have higher rates of substance use and mental health issues compared with their heterosexual counterparts. This is primarily due to the discrimination, stigma, and marginalization they face.\n\nThe pandemic has amplified these stressors, subsequently increasing the risk of substance misuse among LGBTQ+ individuals. Lockdown measures have led to social isolation, which can result in increased feelings of depression, anxiety, and other mental health problems. For some people, these feelings can trigger substance misuse as a coping mechanism.\n\nSubstance misuse can include alcohol, cannabis, opioids, and other substances. It's important to remember that this isn't a behavior unique to LGBTQ+ individuals. People from all walks of life may turn to substance use in times of increased stress. It simply highlights the importance of providing targeted mental health support and addiction services to communities who are disproportionately affected, like the LGBTQ+ community. \n\nFurthermore, it's important to counteract discrimination and promote inclusivity, tolerance, and acceptance. This will help to reduce the stressors that drive people to substance use in the first place. Providing specific resources geared to the needs and experiences of LGBTQ+ people can be particularly beneficial."
     },
     "bias_analysis": {
         "demographic": {"probability": "20.0"},
