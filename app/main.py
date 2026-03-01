@@ -67,7 +67,7 @@ class RoutingDecision(BaseModel):
     confidence: float
     model_accuracy: Optional[int]
     reason: str
-    message_content: Optional[str]  # Changed from gpt4_response to message_content
+    message_content: Optional[str]
 
 class BiasAnalysis(BaseModel):
     demographic: Dict[str, float]
